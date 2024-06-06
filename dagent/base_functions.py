@@ -1,12 +1,13 @@
 from litellm import completion
 # For more info: https://litellm.vercel.app/docs/completion/input
 
-def call_llm(model, messages, tools, response_format={"type":"json_object"}, api_base=None):
+def call_llm_tool(model, messages, tools, api_base=None):
+# response_format={"type":"json_object"}
     response = completion(
         model=model,
         messages=messages,
         tools=tools,
-        response_format=response_format,
         api_base=api_base
     )
+    return response.choices[0].message
     
