@@ -1,16 +1,18 @@
 import json
 from typing import Callable, Any, Dict, Optional
-from base_functions import call_llm_tool
+from .base_functions import call_llm_tool
 from icecream import ic
 
 class Node:
-    def __init__(self, func: Callable, is_llm_call: bool = False, tool_description: Optional[Dict] = None, next_nodes: Dict[str, 'Node'] = None):
+    def __init__(self, func: Callable, args: Optional[tuple] = None, kwargs: Optional[dict] = None, is_llm_call: bool = False, tool_description: Optional[Dict] = None, next_nodes: Dict[str, 'Node'] = None):
         self.func = func
         # next_nodes is a dictionary mapping output values to the next Node
         self.next_nodes = next_nodes or {}
         self.is_llm_call = is_llm_call
         self.tool_description = tool_description
         self.node_result = None
+        self.args = args
+        self.kwargs = kwargs
 
 
     def run(self, *args, **kwargs) -> Any:
@@ -23,7 +25,7 @@ class Node:
             # ic(tool_descs)
             
             try:
-                response = call_llm_tool(model="gpt-3.5-turbo", messages=[{"role": "user", "content": "randomly pick only one of the provided tools"}], tools=tool_descs)
+                response = call_llm_tool(tools=tool_descs, **kwargs)
             except Exception as e:
                 raise RuntimeError(f"Failed to call LLM tool: {e}")
 
@@ -59,7 +61,11 @@ class Node:
                 return self.node_result
             elif len(self.next_nodes) == 1:
                 # assuming it is dependent on the result of this node
-                self.next_nodes[0].run(self.node_result)
+                k, v = list(self.next_nodes.items())[0]
+                print('kv', k,v)
+                if self.kwargs:
+                    v.run(self.node_result, **self.kwargs)
+                v.run(self.node_result)
             else:
                 for _, node in self.next_nodes.items():
                     # just runs whatever is next
@@ -136,7 +142,7 @@ def main():
                 },
             },
         })
-    entry_node = Node(func=tool_use_llm_task, is_llm_call=True, next_nodes={"get_calendar_events": get_calendar_events_node, "create_calendar_event": create_calendar_event_node})
+    entry_node = Node(func=call_llm_tool, is_llm_call=True, next_nodes={"get_calendar_events": get_calendar_events_node, "create_calendar_event": create_calendar_event_node})
 
     dag = DAGent(entry_node=entry_node)
 
