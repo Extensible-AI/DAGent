@@ -1,43 +1,15 @@
 import json
 from typing import Callable, Any, Dict, Optional
+from .DAG_Node import DAG_Node
 from .base_functions import call_llm_tool
 
-class DAG_Node:
-    def __init__(
-        self, 
-        func: Callable, 
-        next_nodes: Dict[str, 'DAG_Node'] = None
-    ):
-        self.func = func
-        self.next_nodes = next_nodes or {}
-        self.node_result = None
-
-    def compile(self):
-        """
-        Use an LLM to generate tool descriptions from functions to run the DAG
-        """
-        return NotImplemented
-
-    def run(self, *args, **kwargs) -> Any:
-        raise NotImplementedError("Subclasses should implement this method")
-
-class FunctionNode(DAG_Node):
-    def __init__(self, func: Callable, next_nodes: Dict[str, 'DAG_Node'] = None):
-        super().__init__(func, next_nodes)
-
-    def run(self, *args, **kwargs) -> Any:
-        # Run the function and store the result
-        self.node_result = self.func(*args, **kwargs)
-        # Pass the result to the next nodes if any
-        for _, next_node in self.next_nodes.items():
-            next_node.run(self.node_result, **(kwargs or {}))
 
 class AgentNode(DAG_Node):
     def __init__(
         self, 
         func: Callable, 
         tool_description: Optional[Dict] = None, 
-        next_nodes: Dict[str, 'AgentNode'] = None
+        next_nodes: Dict[str, DAG_Node] = None
     ):
         super().__init__(func, next_nodes)
         self.tool_description = tool_description

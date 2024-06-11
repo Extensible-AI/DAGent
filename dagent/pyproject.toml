@@ -1,6 +1,6 @@
 [project]
 name = "dagent"
-version = "0.0.1"
+version = "0.0.2"
 description = "AI Agents as DAGs - Directed Acyclic Graphs"
 authors = [
     { name = "Parth Sareen", email = "parth@extensible.dev" }
