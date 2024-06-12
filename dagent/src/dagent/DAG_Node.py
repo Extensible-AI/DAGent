@@ -1,11 +1,9 @@
-from typing import Callable, Any, Dict
-from .DAG_Node import DAG_Node
 
 class DAG_Node:
     def __init__(
         self, 
-        func: Callable, 
-        next_nodes: Dict[str, DAG_Node] = None
+        func: callable, 
+        next_nodes: dict[str, 'DAG_Node'] = None
     ):
         self.func = func
         self.next_nodes = next_nodes or {}
@@ -17,5 +15,5 @@ class DAG_Node:
         """
         return NotImplemented
 
-    def run(self, *args, **kwargs) -> Any:
+    def run(self, **kwargs) -> any:
         raise NotImplementedError("Subclasses should implement this method")
