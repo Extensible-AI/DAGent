@@ -11,4 +11,4 @@ class FunctionNode(DAG_Node):
         # Pass the result to the next nodes if any
         for _, next_node in self.next_nodes.items():
             # next_node.run(self.node_result, **(kwargs or {}))
-            next_node.run()
+            next_node.run(**kwargs)
