@@ -9,6 +9,10 @@ class FunctionNode(DAG_Node):
     def run(self, **kwargs) -> any:
         self.node_result = self.func(**kwargs)
         # Pass the result to the next nodes if any
+        # TODO: figure out param logic pattern
         for _, next_node in self.next_nodes.items():
-            # next_node.run(self.node_result, **(kwargs or {}))
-            next_node.run(**kwargs)
+            # TODO: add pydantic validation + cover in compile method
+            # 
+            params = {'prev_output': self.node_result, **next_node.user_params}
+            next_node.run(**params)
+            # next_node.run(**)
