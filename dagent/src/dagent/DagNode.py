@@ -1,9 +1,9 @@
 
-class DAG_Node:
+class DagNode:
     def __init__(
         self, 
         func: callable, 
-        next_nodes: dict[str, 'DAG_Node'] = None
+        next_nodes: dict[str, 'DagNode'] = None
     ):
         self.func = func
         self.next_nodes = next_nodes or {}

@@ -1,14 +1,14 @@
 import json
 import inspect
-from .DAG_Node import DAG_Node
+from .DagNode import DagNode
 from .base_functions import call_llm_tool
 
 
-class AgentNode(DAG_Node):
+class AgentNode(DagNode):
     def __init__(
         self, 
         func: callable, 
-        next_nodes: dict[str, DAG_Node] = None,
+        next_nodes: dict[str, DagNode] = None,
         user_params: dict | None = None  
     ):
         super().__init__(func, next_nodes)
