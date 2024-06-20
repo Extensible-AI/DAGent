@@ -1,12 +1,9 @@
 import json
 import inspect
 from .DagNode import DagNode
-<<<<<<< HEAD
+
 from .base_functions import call_llm_tool, create_tool_desc
 from icecream import ic
-=======
-from .base_functions import call_llm_tool
->>>>>>> ce1951e (Naming change)
 
 
 class AgentNode(DagNode):
