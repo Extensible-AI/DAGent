@@ -1,7 +1,8 @@
 import json
 import inspect
 from .DagNode import DagNode
-from .base_functions import call_llm_tool
+from .base_functions import call_llm_tool, create_tool_desc
+from icecream import ic
 
 
 class AgentNode(DagNode):
@@ -14,11 +15,22 @@ class AgentNode(DagNode):
         super().__init__(func, next_nodes)
         self.user_params = user_params or {}
 
+        
+    def compile(self) -> None:
+        for _, next_node in self.next_nodes.items():
+            data = create_tool_desc(model='gpt-4-0125-preview', function_desc=inspect.getsource(next_node.func))
+            next_node.tool_description = json.loads(data)
+            # TODO: rm
+            ic(next_node.tool_description)
+            next_node.compile()
+
+
     def run(self, **kwargs) -> any:
         if not self.next_nodes:
             raise ValueError("Next nodes not specified for LLM call")
 
         try:
+            # TODO: Messages param is unclear here to be passed
             response = call_llm_tool(tools=[node.tool_description for node in self.next_nodes.values()], **kwargs)
             tool_calls = getattr(response, 'tool_calls', None)
             if not tool_calls:
