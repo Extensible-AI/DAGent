@@ -1,24 +1,52 @@
 import json
 import inspect
-from .DAG_Node import DAG_Node
-from .base_functions import call_llm_tool
+from .DagNode import DagNode
+from .base_functions import call_llm_tool, create_tool_desc
+from icecream import ic
 
 
-class AgentNode(DAG_Node):
+class AgentNode(DagNode):
     def __init__(
         self, 
         func: callable, 
-        next_nodes: dict[str, DAG_Node] = None,
+        next_nodes: dict[str, DagNode] = None,
         user_params: dict | None = None  
     ):
         super().__init__(func, next_nodes)
         self.user_params = user_params or {}
+
+    def compile(self, model='gpt-4-0125-preview') -> None:
+        #TODO: Test
+        """
+        TODO
+            - Add schema validation
+            - Retry upon failure for generating tool description
+            - Add error handling
+            - Saving the generated tool description, loading if exists 
+        """
+        for _, next_node in self.next_nodes.items():
+            func_name = next_node.func.__name__ + '.json'
+            try:
+                with open(func_name, 'r') as f:
+                    data = json.load(f)
+            except FileNotFoundError:
+                tool_desc = create_tool_desc(model=model, function_desc=inspect.getsource(next_node.func))
+                data = json.loads(tool_desc)
+                with open(func_name, 'w') as f:
+                    json.dump(data, f)
+
+            next_node.tool_description = json.loads(data)
+            # TODO: rm
+            ic(next_node.tool_description)
+            next_node.compile()
+
 
     def run(self, **kwargs) -> any:
         if not self.next_nodes:
             raise ValueError("Next nodes not specified for LLM call")
 
         try:
+            # TODO: Messages param is unclear here to be passed
             response = call_llm_tool(tools=[node.tool_description for node in self.next_nodes.values()], **kwargs)
             tool_calls = getattr(response, 'tool_calls', None)
             if not tool_calls:
