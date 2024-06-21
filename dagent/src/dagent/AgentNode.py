@@ -15,10 +15,25 @@ class AgentNode(DagNode):
         super().__init__(func, next_nodes)
         self.user_params = user_params or {}
 
-        
-    def compile(self) -> None:
+    def compile(self, model='gpt-4-0125-preview') -> None:
+        """
+        TODO
+            - Add schema validation
+            - Retry upon failure for generating tool description
+            - Add error handling
+            - Saving the generated tool description, loading if exists 
+        """
         for _, next_node in self.next_nodes.items():
-            data = create_tool_desc(model='gpt-4-0125-preview', function_desc=inspect.getsource(next_node.func))
+            func_name = next_node.func.__name__ + '.json'
+            try:
+                with open(func_name, 'r') as f:
+                    data = json.load(f)
+            except FileNotFoundError:
+                tool_desc = create_tool_desc(model=model, function_desc=inspect.getsource(next_node.func))
+                data = json.loads(tool_desc)
+                with open(func_name, 'w') as f:
+                    json.dump(data, f)
+
             next_node.tool_description = json.loads(data)
             # TODO: rm
             ic(next_node.tool_description)
