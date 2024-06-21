@@ -1,4 +1,5 @@
 import json
+import os
 import inspect
 from .DagNode import DagNode
 
@@ -15,28 +16,28 @@ class AgentNode(DagNode):
     ):
         super().__init__(func, next_nodes)
         self.user_params = user_params or {}
+    
 
-    def compile(self, model='gpt-4-0125-preview') -> None:
-        #TODO: Test
+    def compile(self, model='gpt-4-0125-preview', force_load=False) -> None:
         """
         TODO
             - Add schema validation
             - Retry upon failure for generating tool description
             - Add error handling
-            - Saving the generated tool description, loading if exists 
+            - Code changing, updating tool description -> automatic?
         """
         for _, next_node in self.next_nodes.items():
             func_name = next_node.func.__name__ + '.json'
-            try:
-                with open(func_name, 'r') as f:
-                    data = json.load(f)
-            except FileNotFoundError:
+            if force_load or not os.path.exists(func_name):
                 tool_desc = create_tool_desc(model=model, function_desc=inspect.getsource(next_node.func))
-                data = json.loads(tool_desc)
+                tool_desc_json = json.loads(tool_desc)
                 with open(func_name, 'w') as f:
-                    json.dump(data, f)
+                    json.dump(tool_desc_json, f)
+            else:
+                with open(func_name, 'r') as f:
+                    tool_desc_json = json.load(f)
 
-            next_node.tool_description = json.loads(data)
+            next_node.tool_description = tool_desc_json 
             # TODO: rm
             ic(next_node.tool_description)
             next_node.compile()
