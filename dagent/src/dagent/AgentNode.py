@@ -17,6 +17,7 @@ class AgentNode(DagNode):
         self.user_params = user_params or {}
 
     def compile(self, model='gpt-4-0125-preview') -> None:
+        #TODO: Test
         """
         TODO
             - Add schema validation
