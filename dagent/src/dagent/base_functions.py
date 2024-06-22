@@ -12,7 +12,7 @@ def call_llm_tool(model, messages, tools, api_base=None):
         tools=tools,
         api_base=api_base
     )
-    return response.choices[0].message
+    return response.choices[0].message.content
     
 
 def create_tool_desc(model, function_desc, api_base=None):

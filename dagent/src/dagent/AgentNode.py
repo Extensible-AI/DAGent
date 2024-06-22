@@ -5,6 +5,7 @@ from .DagNode import DagNode
 
 from .base_functions import call_llm_tool, create_tool_desc
 from icecream import ic
+import logging
 
 
 class AgentNode(DagNode):
@@ -16,6 +17,7 @@ class AgentNode(DagNode):
     ):
         super().__init__(func, next_nodes)
         self.user_params = user_params or {}
+        self.logger = logging.getLogger(__name__)
     
 
     def compile(self, model='gpt-4-0125-preview', force_load=False) -> None:
@@ -25,9 +27,11 @@ class AgentNode(DagNode):
             - Retry upon failure for generating tool description
             - Add error handling
             - Code changing, updating tool description -> automatic?
+            - data models for passing info between nodes
         """
         for _, next_node in self.next_nodes.items():
             func_name = next_node.func.__name__ + '.json'
+            self.logger.info(f"Compiling tool description for function: {next_node.func.__name__}")
             if force_load or not os.path.exists(func_name):
                 tool_desc = create_tool_desc(model=model, function_desc=inspect.getsource(next_node.func))
                 tool_desc_json = json.loads(tool_desc)

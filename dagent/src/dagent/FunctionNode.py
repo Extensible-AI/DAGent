@@ -13,6 +13,6 @@ class FunctionNode(DagNode):
         if not self.next_nodes:
             return self.node_result
         for _, next_node in self.next_nodes.items():
-            # TODO: add pydantic validation + cover in compile method
+            # TODO: creating data models for passing info between nodes 
             params = {'prev_output': self.node_result, **next_node.user_params}
             next_node.run(**params)
