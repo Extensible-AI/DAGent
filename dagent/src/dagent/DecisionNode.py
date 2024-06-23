@@ -8,10 +8,10 @@ from icecream import ic
 import logging
 
 
-class AgentNode(DagNode):
+class DecisionNode(DagNode):
     def __init__(
         self, 
-        func: callable, 
+        func: callable = call_llm_tool, 
         next_nodes: dict[str, DagNode] = None,
         user_params: dict | None = None  
     ):
@@ -50,6 +50,9 @@ class AgentNode(DagNode):
     def run(self, **kwargs) -> any:
         if not self.next_nodes:
             raise ValueError("Next nodes not specified for LLM call")
+        
+        if 'model' not in kwargs:
+            kwargs['model'] = 'gpt-4-0125-preview'
 
         try:
             # TODO: Messages param is unclear here to be passed

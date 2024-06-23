@@ -5,17 +5,16 @@ from openai import OpenAI
 client = OpenAI()
 
 def call_llm_tool(model, messages, tools, api_base=None):
-# response_format={"type":"json_object"}
     response = completion(
         model=model,
         messages=messages,
         tools=tools,
         api_base=api_base
     )
-    return response.choices[0].message.content
+    return response.choices[0].message
     
 
-def create_tool_desc(model, function_desc, api_base=None):
+def create_tool_desc(model, function_desc):
     example = {
             "type": "function",
             "function": {
@@ -37,7 +36,6 @@ def create_tool_desc(model, function_desc, api_base=None):
                 },
             }
     }
-# response_format={"type":"json_object"}
     messages = [{"role": "user", "content": "Create a json for the attached function: {} using the following pattern for the json: {}. Don't add anything extra".format(function_desc, example)}]
     response = client.chat.completions.create(
         model=model,
