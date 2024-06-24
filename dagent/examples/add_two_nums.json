@@ -1,0 +1,1 @@
+{"type": "function", "function": {"name": "add_two_nums", "description": "Add two integer numbers", "parameters": {"type": "object", "properties": {"a": {"type": "integer", "description": "The first number to add"}, "b": {"type": "integer", "description": "The second number to add"}}, "required": ["a", "b"]}}}
