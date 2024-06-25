@@ -49,17 +49,18 @@ class DecisionNode(DagNode):
     def run(self, **kwargs) -> any:
         if not self.next_nodes:
             raise ValueError("Next nodes not specified for LLM call")
-        
+
         if not self.compiled:
             raise ValueError("Node not compiled. Please run compile() method from the entry node first")
-        
-        if 'model' not in kwargs:
-            kwargs['model'] = 'gpt-4-0125-preview'
 
-        if 'prev_output' not in kwargs and 'messages' not in kwargs:
+        kwargs.setdefault('model', 'gpt-4-0125-preview')
+
+        input_data = kwargs.get('prev_output') or kwargs.get('messages')
+        if not input_data:
             raise ValueError("No input data provided for LLM call")
+
         if 'prev_output' in kwargs:
-            kwargs['messages'] = [{'role': 'user', 'content': kwargs['prev_output']}]
+            kwargs['messages'] = [{'role': 'user', 'content': kwargs.pop('prev_output')}]
 
         try:
             # TODO: Messages param is unclear here to be passed
