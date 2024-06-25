@@ -4,7 +4,7 @@ from openai import OpenAI
 
 client = OpenAI()
 
-def call_llm_tool(model, messages, tools, api_base=None):
+def call_llm_tool(model, messages, tools, api_base=None, **kwargs):
     response = completion(
         model=model,
         messages=messages,

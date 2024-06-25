@@ -5,8 +5,17 @@ class FunctionNode(DagNode):
         super().__init__(func, next_nodes)
         self.tool_description = tool_description
         self.user_params = user_params or {}
+        self.compiled = False
+    
+    def compile(self) -> None:
+        self.compiled = True
+        for _, next_node in self.next_nodes.items():
+            next_node.compile()
 
     def run(self, **kwargs) -> any:
+        if not self.compiled:
+            raise ValueError("Node not compiled. Please run compile() method from the entry node first")
+
         self.node_result = self.func(**kwargs)
         # Pass the result to the next nodes if any
         # TODO: figure out param logic pattern
