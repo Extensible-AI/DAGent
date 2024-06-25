@@ -9,6 +9,8 @@ class FunctionNode(DagNode):
     
     def compile(self) -> None:
         self.compiled = True
+        if isinstance(self.next_nodes, list):
+            self.next_nodes = {node.func.__name__: node for node in self.next_nodes}
         for _, next_node in self.next_nodes.items():
             next_node.compile()
 
