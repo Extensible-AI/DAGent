@@ -4,7 +4,6 @@ import inspect
 from .DagNode import DagNode
 
 from .base_functions import call_llm_tool, create_tool_desc
-from icecream import ic
 import logging
 
 
@@ -18,6 +17,7 @@ class DecisionNode(DagNode):
         super().__init__(func, next_nodes)
         self.user_params = user_params or {}
         self.logger = logging.getLogger(__name__)
+        self.compiled = False
     
 
     def compile(self, model='gpt-4-0125-preview', force_load=False) -> None:
@@ -29,6 +29,7 @@ class DecisionNode(DagNode):
             - Code changing, updating tool description -> automatic?
             - data models for passing info between nodes
         """
+        self.compiled = True
         for _, next_node in self.next_nodes.items():
             func_name = next_node.func.__name__ + '.json'
             self.logger.info(f"Compiling tool description for function: {next_node.func.__name__}")
@@ -42,8 +43,6 @@ class DecisionNode(DagNode):
                     tool_desc_json = json.load(f)
 
             next_node.tool_description = tool_desc_json 
-            # TODO: rm
-            ic(next_node.tool_description)
             next_node.compile()
 
 
@@ -51,8 +50,16 @@ class DecisionNode(DagNode):
         if not self.next_nodes:
             raise ValueError("Next nodes not specified for LLM call")
         
+        if not self.compiled:
+            raise ValueError("Node not compiled. Please run compile() method from the entry node first")
+        
         if 'model' not in kwargs:
             kwargs['model'] = 'gpt-4-0125-preview'
+
+        if 'prev_output' not in kwargs and 'messages' not in kwargs:
+            raise ValueError("No input data provided for LLM call")
+        if 'prev_output' in kwargs:
+            kwargs['messages'] = [{'role': 'user', 'content': kwargs['prev_output']}]
 
         try:
             # TODO: Messages param is unclear here to be passed
@@ -73,7 +80,7 @@ class DecisionNode(DagNode):
                 # Merge user_params with function_args, giving precedence to user_params
                 merged_args = {**function_args, **self.user_params}
                 func_signature = inspect.signature(next_node.func)
-                # TODO: add pydantic validation + cover in compile method
+                # TODO: Manage through derived data models 
                 filtered_args = {k: v for k, v in merged_args.items() if k in func_signature.parameters}
 
                 next_node.run(**filtered_args)
