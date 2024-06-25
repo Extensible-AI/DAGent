@@ -29,22 +29,20 @@ entry_node = FunctionNode(func=entry_func)
 decision_node = DecisionNode()
 
 # Link nodes together
-entry_node.next_nodes = {
-    decision_node.func.__name__: decision_node
-}
+entry_node.next_nodes = [decision_node] 
 
-decision_node.next_nodes = {
-    add_two_nums_node.func.__name__: add_two_nums_node,
-    multiply_two_nums_node.func.__name__: multiply_two_nums_node,
-}
+decision_node.next_nodes = [
+    add_two_nums_node,
+    multiply_two_nums_node,
+]
 
-add_two_nums_node.next_nodes = {
-    print_result_node.func.__name__: print_result_node
-}
+add_two_nums_node.next_nodes = [
+    print_result_node
+]
 
-multiply_two_nums_node.next_nodes = {
-    print_result_node.func.__name__: print_result_node
-}
+multiply_two_nums_node.next_nodes = [
+    print_result_node
+]
 
 # Compile the nodes
 entry_node.compile()
@@ -52,7 +50,7 @@ entry_node.compile()
 # Run the nodes
 messages = [{"role": "user", "content": "add the numbers 2 and 3"}]
 messages = [{"role": "user", "content": "multiply the numbers 2 and 3"}]
-entry_node.run(input="add the numbers 2 and 3")
+entry_node.run(input="add the numbers 2 and 10")
 # decision_node.run(messages=messages, model='gpt-3.5-turbo-0125')
 
 

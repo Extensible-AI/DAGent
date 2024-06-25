@@ -30,6 +30,8 @@ class DecisionNode(DagNode):
             - data models for passing info between nodes
         """
         self.compiled = True
+        if isinstance(self.next_nodes, list):
+            self.next_nodes = {node.func.__name__: node for node in self.next_nodes}
         for _, next_node in self.next_nodes.items():
             func_name = next_node.func.__name__ + '.json'
             self.logger.info(f"Compiling tool description for function: {next_node.func.__name__}")
