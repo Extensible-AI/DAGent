@@ -1,4 +1,5 @@
 # DAGent - Directed Acyclic Graphs (DAGs) as AI Agents
+![Dagent Logo](DagentLogo.png)
 
 ## How to Use
 
