@@ -48,9 +48,9 @@ multiply_two_nums_node.next_nodes = [
 entry_node.compile()
 
 # Run the nodes
-messages = [{"role": "user", "content": "add the numbers 2 and 3"}]
-messages = [{"role": "user", "content": "multiply the numbers 2 and 3"}]
 entry_node.run(input="add the numbers 2 and 10")
+# messages = [{"role": "user", "content": "add the numbers 2 and 3"}]
+# messages = [{"role": "user", "content": "multiply the numbers 2 and 3"}]
 # decision_node.run(messages=messages, model='gpt-3.5-turbo-0125')
 
 
