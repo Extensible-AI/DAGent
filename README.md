@@ -89,3 +89,8 @@ add_two_nums_node.user_params = {
 - [ ] Logging
 - [ ] Alerting on error
 - [x] Add a compile method to derive data models and tool descriptions
+
+## Acks
+Shoutout to:
+- [@omkizzy](https://x.com/omkizzy)
+- [@kaelan](https://github.com/Oasixer)
