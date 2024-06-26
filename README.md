@@ -64,7 +64,7 @@ decision_node1.run()
 ### Other things to know
 
 - `prev_output` is needed in the function signature if you want to use the value from the prior function's value. Obviously the prior function should have returned something for this to work
-- Args can be overridden at any time using the following (this merges the kwargs in the background with priority to the user):
+- Args can be overriden at any time using the following (this merges the kwargs in the background with priority to the user):
 ```python
 add_two_nums_node.user_params = {
     a : 10
