@@ -40,12 +40,13 @@ decision_node1 = DecisionNode()
 
 2. Link the appropriate nodes together
 
-While writing this out I feel this will become cumbersome to do/track so I'll improve this piece
+The compile method will link it appropriately
+
 ```python
-decision_node1.next_nodes = {
-    add_two_nums_node.func.__name__: add_two_nums_node,
-    multiply_two_nums_node.func.__name__: multiply_two_nums_node,
-}
+decision_node1.next_nodes = [
+    add_two_nums_node,
+    multiply_two_nums_node,
+]
 ```
 
 3. Run the `.compile()` method
